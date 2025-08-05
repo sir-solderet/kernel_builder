@@ -11,7 +11,10 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y bc bison flex libssl-dev make libc6-dev libncurses5-dev gcc clang python3
+        sudo apt install -y \
+          bc bison flex libssl-dev make libc6-dev libncurses5-dev \
+          gcc clang python3 \
+          gcc-aarch64-linux-gnu
 
     - name: Checkout Kernel Source
       uses: actions/checkout@v4
@@ -33,8 +36,9 @@ jobs:
         make O=$OUT_DIR $KERNEL_DEFCONFIG
         make -j$(nproc) O=$OUT_DIR
 
-    - name: Upload zImage
+    - name: Upload Kernel Image
       uses: actions/upload-artifact@v4
       with:
-        name: kernel-zImage
-        path: kernel/out/arch/arm64/boot/Image.gz*
+        name: kernel-image
+        path: |
+          kernel/out/arch/arm64/boot/Image*
