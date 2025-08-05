@@ -29,11 +29,10 @@ jobs:
         echo "KERNEL_DEFCONFIG=gta9_defconfig" >> $GITHUB_ENV
         echo "OUT_DIR=out" >> $GITHUB_ENV
 
-    - name: Disable ABI symbol list check
+    - name: Create dummy abi_symbollist.raw
       run: |
-        sed -i '/abi_symbollist\.raw/d' kernel/Makefile
-        sed -i '/KERNEL_SRC_ABI_LIST_PATH/d' kernel/Makefile
-        sed -i '/autoksyms.h:/d' kernel/Makefile
+        mkdir -p kernel/abi_dummy
+        echo "# Dummy ABI whitelist" > kernel/abi_dummy/abi_symbollist.raw
 
     - name: Build Kernel
       run: |
