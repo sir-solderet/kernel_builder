@@ -36,7 +36,7 @@ jobs:
           make O=out abi_symbollist=$GITHUB_WORKSPACE/abi_symbollist.raw -j$(nproc)
 
       - name: Upload Kernel Image
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: kernel-image
           path: out/arch/arm64/boot/Image.gz
