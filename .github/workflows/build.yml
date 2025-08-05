@@ -22,7 +22,7 @@ jobs:
 
       - name: Clone kernel source
         run: |
-          git clone --depth=1 https://github.com/sir-solderet/android_kernel_samsung_gta9 kernel
+          git clone --depth=1 https://github.com/sir-solderet/android_kernel_samsung_gta9 -b main
 
       - name: Build kernel
         run: |
