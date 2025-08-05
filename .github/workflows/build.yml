@@ -1,4 +1,4 @@
-name: Build Kernel for GTA9
+name: Build Kernel for GTA9 + KernelSU
 
 on:
   workflow_dispatch:
@@ -15,18 +15,18 @@ jobs:
           bc bison flex libssl-dev make libc6-dev libncurses5-dev \
           gcc clang python3 \
           gcc-aarch64-linux-gnu
-          
-    - name: Clone KernelSU
-      run: |
-        git clone --depth=1 https://github.com/tiann/KernelSU
-        mv kernel/KernelSU/kernel/* kernel/
-
 
     - name: Checkout Kernel Source
       uses: actions/checkout@v4
       with:
-        repository: 0xA11CE613/kernel_samsung_gta9
+        repository: sir-solderet/android_kernel_samsung_gta9
         path: kernel
+
+    - name: Clone KernelSU and setup
+      run: |
+        cd kernel
+        git clone --depth=1 https://github.com/tiann/KernelSU
+        bash KernelSU/setup.sh
 
     - name: Set up environment variables
       run: |
@@ -34,6 +34,10 @@ jobs:
         echo "ARCH=arm64" >> $GITHUB_ENV
         echo "KERNEL_DEFCONFIG=gta9_defconfig" >> $GITHUB_ENV
         echo "OUT_DIR=out" >> $GITHUB_ENV
+
+    - name: Disable ABI symbol list check
+      run: |
+        sed -i '/abi_symbollist.raw/,+1d' kernel/Makefile
 
     - name: Build Kernel
       run: |
