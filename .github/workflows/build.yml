@@ -15,6 +15,12 @@ jobs:
           bc bison flex libssl-dev make libc6-dev libncurses5-dev \
           gcc clang python3 \
           gcc-aarch64-linux-gnu
+          
+    - name: Clone KernelSU
+      run: |
+        git clone --depth=1 https://github.com/KernelSU/KernelSU kernel/KernelSU
+        mv kernel/KernelSU/kernel/* kernel/
+
 
     - name: Checkout Kernel Source
       uses: actions/checkout@v4
