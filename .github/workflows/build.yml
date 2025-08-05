@@ -22,12 +22,6 @@ jobs:
         repository: sir-solderet/android_kernel_samsung_gta9
         path: kernel
 
-    - name: Clone KernelSU and setup
-      run: |
-        cd kernel
-        git clone --depth=1 https://github.com/tiann/KernelSU
-        bash KernelSU/setup.sh
-
     - name: Set up environment variables
       run: |
         echo "CROSS_COMPILE=aarch64-linux-gnu-" >> $GITHUB_ENV
