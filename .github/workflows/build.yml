@@ -1,4 +1,4 @@
-name: Build Kernel for GTA9 + KernelSU
+name: Build Kernel for GTA9
 
 on:
   workflow_dispatch:
@@ -31,7 +31,9 @@ jobs:
 
     - name: Disable ABI symbol list check
       run: |
-        sed -i '/abi_symbollist.raw/,+1d' kernel/Makefile
+        sed -i '/abi_symbollist\.raw/d' kernel/Makefile
+        sed -i '/KERNEL_SRC_ABI_LIST_PATH/d' kernel/Makefile
+        sed -i '/autoksyms.h:/d' kernel/Makefile
 
     - name: Build Kernel
       run: |
