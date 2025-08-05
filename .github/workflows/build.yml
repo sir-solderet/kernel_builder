@@ -34,7 +34,7 @@ jobs:
           export KBUILD_BUILD_HOST=actions
           make O=out gta9_defconfig
           make O=out abi_symbollist=$GITHUB_WORKSPACE/abi_symbollist.raw -j$(nproc)
-          make O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- gta9_defconfig
+          make O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
           make -j$(nproc) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
 
       - name: Upload kernel Image.gz
