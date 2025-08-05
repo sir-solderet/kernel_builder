@@ -19,7 +19,7 @@ jobs:
     - name: Checkout Kernel Source
       uses: actions/checkout@v4
       with:
-        repository: sir-solderet/android_kernel_samsung_gta9
+        repository: 0xA11CE613/kernel_samsung_gta9
         path: kernel
 
     - name: Set up environment variables
