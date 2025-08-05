@@ -1,6 +1,9 @@
-name: Build Kernel for GTA9
+name: Build GTA9 Kernel
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -8,35 +11,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Kernel Source
-        uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y build-essential bc bison flex libssl-dev \
-            libncurses5-dev libelf-dev git wget curl cpio python3 unzip
+            libncurses5-dev libelf-dev gcc-aarch64-linux-gnu
 
-      - name: Set up Kernel Build Environment
+      - name: Clone kernel source
         run: |
-          mkdir -p toolchain
-          cd toolchain
-          wget https://releases.linaro.org/components/toolchain/binaries/latest-7/aarch64-linux-gnu/gcc-linaro-*-x86_64_aarch64-linux-gnu.tar.xz
-          tar -xf gcc-linaro-*-aarch64-linux-gnu.tar.xz
-          echo "TOOLCHAIN_PATH=$(pwd)/$(ls -d */)" >> $GITHUB_ENV
-          echo "CROSS_COMPILE=$(pwd)/$(ls -d */)bin/aarch64-linux-gnu-" >> $GITHUB_ENV
+          git clone --depth=1 https://github.com/sir-solderet/android_kernel_samsung_gta9 kernel
 
-      - name: Build Kernel
+      - name: Build kernel
         run: |
+          cd kernel
+          mkdir -p out
           export ARCH=arm64
           export CROSS_COMPILE=$CROSS_COMPILE
           export KBUILD_BUILD_USER=github
           export KBUILD_BUILD_HOST=actions
           make O=out gta9_defconfig
           make O=out abi_symbollist=$GITHUB_WORKSPACE/abi_symbollist.raw -j$(nproc)
+          make O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- gta9_defconfig
+          make -j$(nproc) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
 
-      - name: Upload Kernel Image
-        uses: actions/upload-artifact@v4
+      - name: Upload kernel Image.gz
+        uses: actions/upload-artifact@v3
         with:
           name: kernel-image
-          path: out/arch/arm64/boot/Image.gz
+          path: kernel/out/arch/arm64/boot/Image.gz
