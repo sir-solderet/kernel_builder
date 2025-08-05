@@ -28,11 +28,15 @@ jobs:
         echo "ARCH=arm64" >> $GITHUB_ENV
         echo "KERNEL_DEFCONFIG=gta9_defconfig" >> $GITHUB_ENV
         echo "OUT_DIR=out" >> $GITHUB_ENV
-
-    - name: Create dummy abi_symbollist.raw
+        
+    - name: Create dummy ABI whitelist
       run: |
         mkdir -p kernel/abi_dummy
-        echo "# Dummy ABI whitelist" > kernel/abi_dummy/abi_symbollist.raw
+        echo "# dummy whitelist" > kernel/abi_dummy/abi_symbollist.raw
+
+    - name: Patch Makefile ABI path
+      run: |
+        sed -i 's|/home/dpi/qb5_8814/workspace/P4_1716/android/out/target/product/gta9/obj/KERNEL_OBJ/kernel-5.10/abi_symbollist.raw|$(pwd)/kernel/abi_dummy/abi_symbollist.raw|' kernel/Makefile
 
     - name: Build Kernel
       run: |
