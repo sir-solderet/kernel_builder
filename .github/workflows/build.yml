@@ -8,37 +8,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y \
-          bc bison flex libssl-dev make libc6-dev libncurses5-dev \
-          gcc clang python3 \
-          gcc-aarch64-linux-gnu
+      - name: Checkout Kernel Source
+        uses: actions/checkout@v3
 
-    - name: Checkout Kernel Source
-      uses: actions/checkout@v4
-      with:
-        repository: sir-solderet/android_kernel_samsung_gta9
-        path: kernel
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential bc bison flex libssl-dev \
+            libncurses5-dev libelf-dev git wget curl cpio python3 unzip
 
-    - name: Set up environment variables
-      run: |
-        echo "CROSS_COMPILE=aarch64-linux-gnu-" >> $GITHUB_ENV
-        echo "ARCH=arm64" >> $GITHUB_ENV
-        echo "KERNEL_DEFCONFIG=gta9_defconfig" >> $GITHUB_ENV
-        echo "OUT_DIR=out" >> $GITHUB_ENV
-        
-    - name: Build Kernel
-      run: |
-        cd kernel
-        mkdir -p $OUT_DIR
-        make O=$OUT_DIR $KERNEL_DEFCONFIG
-        make -j$(nproc) O=$OUT_DIR
+      - name: Set up Kernel Build Environment
+        run: |
+          mkdir -p toolchain
+          cd toolchain
+          wget https://releases.linaro.org/components/toolchain/binaries/latest-7/aarch64-linux-gnu/gcc-linaro-*-x86_64_aarch64-linux-gnu.tar.xz
+          tar -xf gcc-linaro-*-aarch64-linux-gnu.tar.xz
+          echo "TOOLCHAIN_PATH=$(pwd)/$(ls -d */)" >> $GITHUB_ENV
+          echo "CROSS_COMPILE=$(pwd)/$(ls -d */)bin/aarch64-linux-gnu-" >> $GITHUB_ENV
 
-    - name: Upload Kernel Image
-      uses: actions/upload-artifact@v4
-      with:
-        name: kernel-image
-        path: |
-          kernel/out/arch/arm64/boot/Image*
+      - name: Build Kernel
+        run: |
+          export ARCH=arm64
+          export CROSS_COMPILE=$CROSS_COMPILE
+          export KBUILD_BUILD_USER=github
+          export KBUILD_BUILD_HOST=actions
+          make O=out gta9_defconfig
+          make O=out abi_symbollist=$GITHUB_WORKSPACE/abi_symbollist.raw -j$(nproc)
+
+      - name: Upload Kernel Image
+        uses: actions/upload-artifact@v3
+        with:
+          name: kernel-image
+          path: out/arch/arm64/boot/Image.gz
