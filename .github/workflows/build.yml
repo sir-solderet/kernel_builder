@@ -34,7 +34,7 @@ jobs:
           export KBUILD_BUILD_USER=github
           export KBUILD_BUILD_HOST=actions
           make O=out gta9_defconfig
-          make -j$(nproc) O=out
+          make -j$(nproc) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- WERROR=0
 
       - name: Upload kernel Image.gz
         uses: actions/upload-artifact@v4
