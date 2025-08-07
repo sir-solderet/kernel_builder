@@ -29,13 +29,12 @@ jobs:
           cd kernel/samsung/gta9
           mkdir -p out
           export ARCH=arm64
-          export CROSS_COMPILE=$CROSS_COMPILE
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          export CROSS_COMPILE64=aarch64-linux-gnu-
           export KBUILD_BUILD_USER=github
           export KBUILD_BUILD_HOST=actions
           make O=out gta9_defconfig
-          make O=out abi_symbollist=$GITHUB_WORKSPACE/abi_symbollist.raw -j$(nproc)
-          make O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
-          make -j$(nproc) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
+          make -j$(nproc) O=out
 
       - name: Upload kernel Image.gz
         uses: actions/upload-artifact@v4
