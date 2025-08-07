@@ -24,6 +24,7 @@ jobs:
         run: |
           mkdir -p kernel/samsung
           git clone https://github.com/sir-solderet/android_kernel_samsung_gta9.git kernel/samsung/gta9
+          
       - name: Build kernel
         run: |
           cd kernel/samsung/gta9
@@ -35,7 +36,13 @@ jobs:
           export KBUILD_BUILD_HOST=actions
           export CONFIG_WERROR=n
           make O=out gta9_defconfig
-          make -j$(nproc) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- KCFLAGS="-Wno-error=format"
+          make -j$(nproc) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- KCFLAGS="-Wno-error=format" 2>&1 | tee out/build.log
+
+      - name: Show full build log on failure
+        if: failure()
+        run: |
+          echo "===== Kernel Build Failed. Showing last 200 lines of log ====="
+          tail -n 200 kernel/samsung/gta9/out/build.log || true
 
       - name: Upload kernel Image.gz
         uses: actions/upload-artifact@v4
