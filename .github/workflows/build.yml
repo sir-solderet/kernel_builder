@@ -44,11 +44,6 @@ jobs:
           echo "===== Kernel Build Failed. Showing last 200 lines of log ====="
           tail -n 200 kernel/samsung/gta9/out/build.log || true
 
-      - name: Check for kernel image
-         run: |
-          echo "Looking for kernel image output..."
-          find kernel/samsung/gta9/out/arch/arm64/boot -type f
-
       - name: Verify kernel image exists
         run: |
           IMAGE=kernel/samsung/gta9/out/arch/arm64/boot/Image.gz-dtb
